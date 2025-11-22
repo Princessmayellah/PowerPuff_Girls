@@ -9,6 +9,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.15.8"
+    "astro": "^5.15.8",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mqtt": "^5.14.1",
+    "mysql2": "^3.15.3"
   }
 }

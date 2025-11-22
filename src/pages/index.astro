@@ -1,16 +1,41 @@
 ---
-
+import '../styles/style.css';
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFID Dashboard</title>
+    <script is:inline src="/mqtt.min.js"></script>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <div class="card panel-left">
+            <h2>RFID</h2>
+            <div class="rfid-list"></div>
+        </div>
+
+        <div class="card panel-right">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>RFID</th>
+                        <th>Status</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody id="log-table-body">
+                    </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script is:inline src="/src/scripts/mqtt.js"></script>
+
+</body>
 </html>

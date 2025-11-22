@@ -1,0 +1,87 @@
+/* Basic Layout & Mobile Responsiveness */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+}
+
+.main-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    
+    /* --- THE FIX --- */
+    /* This stops the Left Panel from stretching to match the Right Panel */
+    align-items: flex-start; 
+}
+
+/* Mobile Friendly: Stack columns on small screens */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        /* Reset alignment on mobile so they stack normally */
+        align-items: stretch; 
+    }
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.panel-left { flex: 1; }
+.panel-right { flex: 2; }
+
+/* Toggle Button Styling */
+.rfid-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px; width: 16px;
+    left: 4px; bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider { background-color: #2196F3; }
+input:checked + .slider:before { transform: translateX(26px); }
+
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }
+
+/* Fixed Table Styling */
+table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+th { text-align: left; border-bottom: 2px solid #ddd; padding: 10px; color: #333; white-space: nowrap; }
+th:nth-child(1) { width: 10%; } 
+th:nth-child(2) { width: 25%; } 
+th:nth-child(3) { width: 30%; } 
+th:nth-child(4) { width: 35%; } 
+td { padding: 10px; border-bottom: 1px solid #eee; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
