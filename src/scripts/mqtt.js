@@ -1,90 +1,69 @@
-// Connect to your PC's IP
-const client = mqtt.connect('ws://192.168.1.14:9001');
+async function fetchData() {
+    try {
+        const res = await fetch("http://10.63.198.232/Lab2/web_interface.php");
+        const data = await res.json();
 
-const rfidListContainer = document.querySelector('.rfid-list');
-const logTable = document.getElementById('log-table-body');
-let logCount = 1;
+        updateRegistered(data.registered);
+        updateLogs(data.logs);
+    } catch (err) {
+        console.log("Fetch error:", err);
+    }
+}
 
-// --- YOUR DATABASE ---
-const validDatabase = ["63E7E39","B2728FAB"]; 
+function updateRegistered(list) {
+    const container = document.querySelector(".rfid-list");
+    container.innerHTML = "";
 
-client.on('connect', () => {
-    console.log("Connected to MQTT Broker");
-    client.subscribe('RFID_WEB');
-});
+    list.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "rfid-item";
 
-// --- INITIALIZATION (Static Left Panel) ---
-function initializeDashboard() {
-    rfidListContainer.innerHTML = ""; 
-    validDatabase.forEach((uid, index) => {
-        const count = index + 1;
-        const newItem = document.createElement('div');
-        newItem.className = 'rfid-item';
-        newItem.id = `card-${uid}`; 
-        
-        newItem.innerHTML = `
-            <span class="index">${count}.</span>
-            <span class="uid">${uid}</span>
+        div.innerHTML = `
+            <span class="index">${index + 1}.</span>
+            <span class="uid">${item.rfid}</span>
             <label class="switch">
-                <input type="checkbox" id="toggle-${uid}" disabled>
+                <input type="checkbox" ${item.status == 1 ? "checked" : ""} disabled>
                 <span class="slider round"></span>
             </label>
         `;
-        rfidListContainer.appendChild(newItem);
+
+        container.appendChild(div);
     });
 }
 
-initializeDashboard();
+function updateLogs(logs) {
+    const table = document.getElementById("log-table-body");
+    table.innerHTML = "";
 
-// --- LISTEN FOR MESSAGES ---
-client.on('message', (topic, message) => {
-    // Trim cleans up hidden spaces!
-    const msgString = message.toString().trim(); 
-    const parts = msgString.split(","); 
-    
-    const uid = parts[0].trim();      
-    const status = parts[1].trim(); 
+    logs.forEach((log, index) => {
+        let displayStatus;
 
-    // 1. Update Toggle (Visual Only)
-    if (validDatabase.includes(uid)) {
-        updateToggleVisual(uid, status);
-    }
+        // Convert status to number if possible
+        const statusNum = Number(log.status);
 
-    // 2. Add Log Entry
-    addLogEntry(uid, status);
-});
-
-
-function updateToggleVisual(uid, status) {
-    const toggleBtn = document.getElementById(`toggle-${uid}`);
-    if (toggleBtn) {
-        // Logic: If 1 -> Checked (Blue). If 0 -> Unchecked (Gray).
-        if (status === "1") {
-            toggleBtn.checked = true; 
+        // Check if RFID exists in logs
+        if (!log.rfid || log.status === null) {
+            displayStatus = "RFID NOT FOUND";
+        } else if (statusNum === 1 || statusNum === 0) {
+            displayStatus = statusNum;
         } else {
-            toggleBtn.checked = false; 
+            displayStatus = "RFID NOT FOUND";
         }
-    }
-}
 
-function addLogEntry(uid, status) {
-    const now = new Date().toLocaleString('en-US', { 
-        month: 'long', day: 'numeric', year: 'numeric', 
-        hour: 'numeric', minute: 'numeric', hour12: true 
+        const row = `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${log.rfid}</td>
+                <td>${displayStatus}</td>
+                <td>${log.time}</td>
+            </tr>
+        `;
+        table.insertAdjacentHTML("beforeend", row);
     });
-
-    let displayStatus = "RFID NOT FOUND"; 
-    if (validDatabase.includes(uid)) {
-        displayStatus = status; 
-    }
-
-    const row = `
-        <tr>
-            <td>${logCount++}.</td>
-            <td>${uid}</td>
-            <td>${displayStatus}</td>
-            <td>${now}</td>
-        </tr>
-    `;
-    logTable.insertAdjacentHTML('afterbegin', row);
 }
+
+
+// Auto-refresh every 1 second
+setInterval(fetchData, 1000);
+
+fetchData();
